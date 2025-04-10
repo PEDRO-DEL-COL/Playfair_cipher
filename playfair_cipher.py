@@ -16,7 +16,7 @@ def find_position(letter, matrix):
 
 # this function will take as input the pair of letters to be coded and relate their
 # position inside the given matrix according to the rules
-def code_pair(letter1, letter2, matrix):
+def encode_pair(letter1, letter2, matrix):
     line1, col1 = find_position(letter1, matrix)
     line2, col2 = find_position(letter2, matrix)
 
@@ -25,6 +25,20 @@ def code_pair(letter1, letter2, matrix):
     
     elif col1 == col2:
         return matrix[(line1 + 1) % 5][col1], matrix[(line2 + 1) % 5][col2]
+    
+    else:
+        return matrix[line1][col2], matrix[line2][col1]
+
+# function to decode the pair of given characters based on the given matrix
+def decode_pair(letter1, letter2, matrix):
+    line1, col1 = find_position(letter1, matrix)
+    line2, col2 = find_position(letter2, matrix)
+
+    if line1 == line2:
+        return matrix[line1][(col1 - 1) % 5], matrix[line2][(col2 - 1) % 5]
+    
+    elif col1 == col2:
+        return matrix[(line1 - 1) % 5][col1], matrix[(line2 - 1) % 5][col2]
     
     else:
         return matrix[line1][col2], matrix[line2][col1]
@@ -47,7 +61,8 @@ def create_matrix(keyword):
     matrix = keyword_list + alphabet
     return [matrix[i:i+5] for i in range(0,25,5)]
 
-def code_word(word, matrix):
+# function to encode the given word based on the given matrix
+def encode_word(word, matrix):
     word_list = []
     i = 0
     coded_word = ''
@@ -70,15 +85,56 @@ def code_word(word, matrix):
     for i in range(0, len(word_list), 2):
         letter1 = word_list[i]
         letter2 = word_list[i+1]
-        char1, char2 = code_pair(letter1, letter2, matrix)
+        char1, char2 = encode_pair(letter1, letter2, matrix)
         coded_word = coded_word + char1 + char2
 
     return coded_word
 
-matrix = create_matrix(input('Type your keyword: '))
+# function to decode a given word using the given matrix
+def decode_word(word, matrix):
+    decoded_word = ''
 
-word_to_be_coded = cleanup_text(input('Type the word you want to code: '))
+    for i in range(0, len(word), 2):
+        letter1 = word[i]
+        letter2 = word[i+1]
+        char1, char2 = decode_pair(letter1, letter2, matrix)
+        decoded_word = decoded_word + char1 + char2
 
-coded_word = code_word(word_to_be_coded, matrix)
+    return decoded_word
 
-print(coded_word)
+
+# program's body with a simple menu
+quit = False
+
+while not quit:
+    choice = input('Chose an option\n1- Encode word\n2- Decode word\n3- Quit\n').strip().lower()
+
+    if choice == '1':
+        matrix = create_matrix(input('Type your keyword: '))
+
+        word_to_be_coded = cleanup_text(input('Type the word you want to code: '))
+
+        coded_word = encode_word(word_to_be_coded, matrix)
+
+        print(coded_word)
+
+        quit = False
+
+    elif choice == '2':
+        matrix = create_matrix(input('Type your keyword: '))
+
+        word_to_be_decoded = cleanup_text(input('Type the word you want to decode: '))
+
+        decoded_word = decode_word(word_to_be_decoded, matrix)
+
+        print(decoded_word)
+
+        quit = False
+
+    elif choice == '3':
+        quit = True
+
+    else:
+        print('Please type a valid choice!')
+
+        quit = False
